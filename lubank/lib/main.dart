@@ -3,19 +3,9 @@ import 'package:flutter/material.dart';
 import 'entity/Investimento.dart';
 import 'service/InvestimentoService.dart';
 
-
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-      options: FirebaseOptions(
-        apiKey: 'key',
-        appId: 'id',
-        messagingSenderId: 'sendid',
-        projectId: 'myapp',
-        storageBucket: 'myapp-b9yt18.appspot.com',
-      )
-  );
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
 
@@ -86,7 +76,15 @@ class _InvestimentoListScreenState extends State<InvestimentoListScreen> {
               final investimento = investimentos[index];
               return ListTile(
                 title: Text(investimento.nome),
-                subtitle: Text(investimento.descricao),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(investimento.descricao),
+                    Text('Tipo da Moeda: ${investimento.tipoMoeda}'),
+                    Text('Valor da Moeda: ${investimento.valorMoeda}'),
+                    Text('Preço Atual: ${investimento.precoAtual}'),
+                  ],
+                ),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -126,6 +124,9 @@ class _InvestimentoFormScreenState extends State<InvestimentoFormScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nomeController = TextEditingController();
   final TextEditingController _descricaoController = TextEditingController();
+  final TextEditingController _tipoMoedaController = TextEditingController();
+  final TextEditingController _valorMoedaController = TextEditingController();
+  final TextEditingController _precoAtualController = TextEditingController();
   final InvestimentoService _service = InvestimentoService();
 
   @override
@@ -134,6 +135,9 @@ class _InvestimentoFormScreenState extends State<InvestimentoFormScreen> {
     if (widget.investimento != null) {
       _nomeController.text = widget.investimento!.nome;
       _descricaoController.text = widget.investimento!.descricao;
+      _tipoMoedaController.text = widget.investimento!.tipoMoeda;
+      _valorMoedaController.text = widget.investimento!.valorMoeda.toString();
+      _precoAtualController.text = widget.investimento!.precoAtual.toString();
     }
   }
 
@@ -141,8 +145,18 @@ class _InvestimentoFormScreenState extends State<InvestimentoFormScreen> {
     if (_formKey.currentState!.validate()) {
       final nome = _nomeController.text;
       final descricao = _descricaoController.text;
+      final tipoMoeda = _tipoMoedaController.text;
+      final valorMoeda = double.parse(_valorMoedaController.text);
+      final precoAtual = double.parse(_precoAtualController.text);
       final id = widget.investimento?.id ?? DateTime.now().toString();
-      final investimento = Investimento(id: id, nome: nome, descricao: descricao);
+      final investimento = Investimento(
+        id: id,
+        nome: nome,
+        descricao: descricao,
+        tipoMoeda: tipoMoeda,
+        valorMoeda: valorMoeda,
+        precoAtual: precoAtual,
+      );
 
       if (widget.investimento == null) {
         _service.addInvestimento(investimento);
@@ -174,6 +188,23 @@ class _InvestimentoFormScreenState extends State<InvestimentoFormScreen> {
                 controller: _descricaoController,
                 decoration: const InputDecoration(labelText: 'Descrição'),
                 validator: (value) => value!.isEmpty ? 'Informe a descrição' : null,
+              ),
+              TextFormField(
+                controller: _tipoMoedaController,
+                decoration: const InputDecoration(labelText: 'Tipo da Moeda'),
+                validator: (value) => value!.isEmpty ? 'Informe o tipo da moeda' : null,
+              ),
+              TextFormField(
+                controller: _valorMoedaController,
+                decoration: const InputDecoration(labelText: 'Valor da Moeda'),
+                keyboardType: TextInputType.number,
+                validator: (value) => value!.isEmpty ? 'Informe o valor da moeda' : null,
+              ),
+              TextFormField(
+                controller: _precoAtualController,
+                decoration: const InputDecoration(labelText: 'Preço Atual'),
+                keyboardType: TextInputType.number,
+                validator: (value) => value!.isEmpty ? 'Informe o preço atual' : null,
               ),
               const SizedBox(height: 20),
               ElevatedButton(
