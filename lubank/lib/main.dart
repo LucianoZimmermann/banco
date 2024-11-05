@@ -19,16 +19,16 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Controle de Investimentos',
       theme: ThemeData(
-        // Paleta de cores roxas
-        primaryColor: const Color(0xFF6A0DAD), // Roxo escuro
+        // Paleta de cores mais visível com contraste aprimorado
+        primaryColor: const Color(0xFF512DA8), // Roxo mais escuro
         colorScheme: ColorScheme(
-          primary: const Color(0xFF6A0DAD), // Roxo escuro
-          secondary: const Color(0xFF8A2BE2), // BlueViolet
-          surface: const Color(0xFFE6E6FA), // Lavanda claro
-          background: const Color(0xFFFFFFFF), // Branco
-          error: Colors.red,
+          primary: const Color(0xFF512DA8), // Roxo escuro
+          secondary: const Color(0xFF9575CD), // Roxo mais claro
+          surface: const Color(0xFFFFFFFF), // Branco
+          background: const Color(0xFFF3E5F5), // Lavanda mais clara
+          error: Colors.redAccent,
           onPrimary: Colors.white,
-          onSecondary: Colors.white,
+          onSecondary: Colors.black,
           onSurface: Colors.black,
           onBackground: Colors.black,
           onError: Colors.white,
@@ -57,7 +57,7 @@ class _InvestimentoListScreenState extends State<InvestimentoListScreen> {
   void _addInvestimento() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => InvestimentoFormScreen()), // Navega para a tela de formulário
+      MaterialPageRoute(builder: (context) => const InvestimentoFormScreen()), // Navega para a tela de formulário
     );
   }
 
@@ -184,4 +184,58 @@ class _InvestimentoFormScreenState extends State<InvestimentoFormScreen> {
         precoAtual: precoAtual,
       );
 
-    // Adiciona ou atualiza o investi
+      // Adiciona ou atualiza o investimento no serviço
+      _service.saveInvestimento(investimento);
+      Navigator.pop(context); // Retorna à tela anterior
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(title: const Text('Formulário de Investimento')),
+    body: Form(
+    key: _formKey,
+    child: Padding(
+    padding: const EdgeInsets.all(16.0),
+    child: Column(
+    children: [
+    TextFormField(
+    controller: _nomeController,
+    decoration: const InputDecoration(labelText: 'Nome'),
+    validator: (value) => value!.isEmpty ? 'Informe o nome' : null,
+    ),
+    TextFormField(
+    controller: _descricaoController,
+    decoration: const InputDecoration(labelText: 'Descrição'),
+    validator: (value) => value!.isEmpty ? 'Informe a descrição' : null,
+    ),
+    TextFormField(
+    controller: _tipoMoedaController,
+    decoration: const InputDecoration(labelText: 'Tipo da Moeda'),
+    validator: (value) => value!.isEmpty ? 'Informe o tipo da moeda' : null,
+    ),
+    TextFormField(
+    controller: _valorMoedaController,
+    decoration: const InputDecoration(labelText: 'Valor da Moeda'),
+    keyboardType: TextInputType.number,
+    validator: (value) => value!.isEmpty ? 'Informe o valor da moeda' : null,
+    ),
+      TextFormField(
+        controller: _precoAtualController,
+        decoration: const InputDecoration(labelText: 'Preço Atual'),
+        keyboardType: TextInputType.number,
+        validator: (value) => value!.isEmpty ? 'Informe o preço atual' : null,
+      ),
+      const SizedBox(height: 20), // Espaço entre os campos e o botão
+      ElevatedButton(
+        onPressed: _saveInvestimento, // Chama o método para salvar o investimento
+        child: const Text('Salvar'), // Texto do botão
+      ),
+    ],
+    ),
+    ),
+    ),
+    );
+  }
+}

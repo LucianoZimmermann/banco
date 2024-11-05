@@ -1,5 +1,6 @@
-package com.example.android
+package com.luciano.appp
 
 import io.flutter.embedding.android.FlutterActivity
 
-class MainActivity: FlutterActivity()
+class MainActivity: FlutterActivity() {
+}

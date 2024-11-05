@@ -1,18 +1,44 @@
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
+android {
+    namespace 'com.example.lubank'  // Atualize para o ID do seu aplicativo
+    compileSdkVersion flutter.compileSdkVersion
+    ndkVersion flutter.ndkVersion
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+
+    defaultConfig {
+        // Application ID deve ser único. Atualize conforme necessário.
+        applicationId "com.example.lubank"  // Atualize para o ID do seu aplicativo
+        minSdkVersion flutter.minSdkVersion
+        targetSdkVersion flutter.targetSdkVersion
+        versionCode flutterVersionCode.toInteger()
+        versionName flutterVersionName
+    }
+
+    buildTypes {
+        release {
+            // Configuração de assinatura para builds de release.
+            // Lembre-se de substituir pela sua configuração de assinatura.
+            signingConfig signingConfigs.debug
+        }
     }
 }
 
-rootProject.buildDir = "../build"
-subprojects {
-    project.buildDir = "${rootProject.buildDir}/${project.name}"
-}
-subprojects {
-    project.evaluationDependsOn(":app")
+flutter {
+    source '../..'  // Mantenha esse caminho se ele apontar corretamente para a raiz do seu projeto Flutter.
 }
 
-tasks.register("clean", Delete) {
-    delete rootProject.buildDir
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:${kotlin_version}"  // Atualizado para usar kotlin-stdlib padrão
+    implementation "io.flutter:flutter_embedding_debug:${flutter.version}"
 }

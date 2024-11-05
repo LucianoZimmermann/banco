@@ -1,18 +1,41 @@
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'com.google.gms.google-services'  // Plugin para Firebase, se você estiver usando
+}
+
+android {
+    compileSdkVersion 33 // Insira a versão desejada aqui
+
+    defaultConfig {
+        applicationId "com.luciano.appp" // Substitua pelo seu ID de aplicativo
+        minSdkVersion 21
+        targetSdkVersion 33
+        versionCode 1
+        versionName "1.0.0"
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
     }
 }
 
-rootProject.buildDir = "../build"
-subprojects {
-    project.buildDir = "${rootProject.buildDir}/${project.name}"
-}
-subprojects {
-    project.evaluationDependsOn(":app")
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.8.22"
+    implementation platform('com.google.firebase:firebase-bom:32.1.0') // Dependência do Firebase
+    implementation 'com.google.firebase:firebase-analytics'            // Exemplo de dependência
 }
 
-tasks.register("clean", Delete) {
-    delete rootProject.buildDir
-}
+apply plugin: 'com.google.gms.google-services' // Mantém o plugin do Firebase
