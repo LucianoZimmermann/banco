@@ -1,0 +1,49 @@
+plugins {
+    id "com.android.application"
+    id 'com.google.gms.google-services' // Plugin do Firebase para serviços do Google
+    id "kotlin-android"
+    id "dev.flutter.flutter-gradle-plugin" // Deve ser aplicado após os plugins Android e Kotlin
+}
+
+android {
+    namespace = "com.example.androidstudio" // Substitua pelo seu namespace real, como "com.luciano.appp"
+    compileSdk = flutter.compileSdkVersion
+    ndkVersion = flutter.ndkVersion
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8" // Corrigido para manter consistência com o formato
+    }
+
+    defaultConfig {
+        applicationId = "com.example.androidstudio" // Use o ID do seu app, como "com.luciano.appp"
+        minSdkVersion 23
+        targetSdk = flutter.targetSdkVersion
+        versionCode flutter.versionCode
+        versionName flutter.versionName
+        multiDexEnabled = true // Necessário para evitar erros se você tiver muitas dependências
+    }
+
+    buildTypes {
+        release {
+            signingConfig = signingConfigs.debug // Use configuração própria para builds de produção
+            minifyEnabled false // Para evitar problemas em versões iniciais, desabilite a minificação
+        }
+    }
+}
+
+flutter {
+    source = "../.." // Certifique-se de que este caminho esteja correto em relação ao diretório raiz do projeto
+}
+
+dependencies {
+    implementation platform('com.google.firebase:firebase-bom:32.2.3') // Firebase BOM para gerenciar versões
+    implementation 'com.google.firebase:firebase-analytics-ktx' // Adicione dependências Firebase necessárias
+    implementation 'androidx.multidex:multidex:2.0.1' // Suporte ao MultiDex (necessário para `multiDexEnabled = true`)
+}
+
+apply plugin: 'com.google.gms.google-services' // Deve estar após o bloco `dependencies`
