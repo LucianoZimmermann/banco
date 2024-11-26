@@ -1,21 +1,19 @@
 // Classe que representa um investimento
 class Investimento {
-  // Propriedades do investimento
-  String id; // Identificador único do investimento
-  String nome; // Nome do investimento
-  String descricao; // Descrição do investimento
-  String tipoMoeda; // Tipo da moeda do investimento (ex: "USD", "BRL")
-  double valorMoeda; // Valor da moeda investida
-  double precoAtual; // Preço atual do ativo
+  final String id;
+  final String nome;
+  final String descricao;
+  final double precoAtual;
+  final String tipoMoeda;
+  final double valorMoeda;
 
-  // Construtor da classe, que inicializa as propriedades do investimento
   Investimento({
-    required this.id, // ID do investimento (obrigatório)
-    required this.nome, // Nome do investimento (obrigatório)
-    required this.descricao, // Descrição do investimento (obrigatório)
-    required this.tipoMoeda, // Tipo da moeda (obrigatório)
-    required this.valorMoeda, // Valor da moeda (obrigatório)
-    required this.precoAtual, // Preço atual (obrigatório)
+    required this.id,
+    required this.nome,
+    required this.descricao,
+    required this.precoAtual,
+    required this.tipoMoeda,
+    required this.valorMoeda,
   });
 
   // Método que converte o objeto Investimento em um mapa para armazenamento no Firestore
@@ -31,14 +29,14 @@ class Investimento {
   }
 
   // Método de fábrica que cria uma instância de Investimento a partir de um mapa
-  factory Investimento.fromMap(Map<String, dynamic> map, String id) {
+  factory Investimento.fromFirestore(Map<String, dynamic> data) {
     return Investimento(
-      id: id, // Passa o ID recebido
-      nome: map['nome'], // Obtém o nome do mapa
-      descricao: map['descricao'], // Obtém a descrição do mapa
-      tipoMoeda: map['tipoMoeda'], // Obtém o tipo da moeda do mapa
-      valorMoeda: map['valorMoeda'], // Obtém o valor da moeda do mapa
-      precoAtual: map['precoAtual'], // Obtém o preço atual do mapa
+      id: data['id'] ?? '',
+      nome: data['nome'] ?? '',
+      descricao: data['descricao'] ?? '',
+      precoAtual: (data['precoAtual'] ?? 0).toDouble(),
+      tipoMoeda: data['tipoMoeda'] ?? '',
+      valorMoeda: (data['valorMoeda'] ?? 0).toDouble(),
     );
   }
 }

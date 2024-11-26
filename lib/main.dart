@@ -85,47 +85,63 @@ class _InvestimentoListScreenState extends State<InvestimentoListScreen> {
         title: const Text('Controle de Investimentos'), // Título da AppBar
       ),
       body: StreamBuilder<List<Investimento>>(
-        stream: _service.getInvestimentos(), // Obtém a lista de investimentos em tempo real
+        stream: _service.getInvestimentos(), // seu método Stream para obter os dados
         builder: (context, snapshot) {
-          // Verifica o estado da conexão
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator()); // Mostra indicador de carregamento
+            return const Center(child: CircularProgressIndicator());
           }
           if (snapshot.hasError) {
-            return const Center(child: Text('Erro ao carregar dados')); // Exibe mensagem de erro
+            return Center(
+              child: Text('Erro ao carregar dados: ${snapshot.error}'), // Exibe mensagem de erro caso tenha
+            );
           }
-          final investimentos = snapshot.data ?? []; // Obtém os investimentos ou uma lista vazia
-          return ListView.builder(
-            itemCount: investimentos.length, // Define o número de itens na lista
-            itemBuilder: (context, index) {
-              final investimento = investimentos[index]; // Obtém o investimento atual
-              return ListTile(
-                title: Text(investimento.nome), // Exibe o nome do investimento
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(investimento.descricao), // Exibe a descrição do investimento
-                    Text('Tipo da Moeda: ${investimento.tipoMoeda}'), // Exibe o tipo da moeda
-                    Text('Valor da Moeda: ${investimento.valorMoeda}'), // Exibe o valor da moeda
-                    Text('Preço Atual: ${investimento.precoAtual}'), // Exibe o preço atual
-                  ],
-                ),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.edit), // Ícone de editar
-                      onPressed: () => _editInvestimento(investimento), // Chama o método de edição
+          if (snapshot.hasData) {
+            final investimentos = snapshot.data!;
+            return ListView.builder(
+              itemCount: investimentos.length,
+              itemBuilder: (context, index) {
+                final investimento = investimentos[index];
+                return Card(
+                  margin: const EdgeInsets.all(8.0),
+                  elevation: 4,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          investimento.nome,
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(investimento.descricao, style: const TextStyle(fontSize: 16)),
+                        const SizedBox(height: 8),
+                        Text('Tipo da Moeda: ${investimento.tipoMoeda}'),
+                        Text('Valor da Moeda: ${investimento.valorMoeda}'),
+                        Text('Preço Atual: ${investimento.precoAtual}'),
+                        const SizedBox(height: 16),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.edit),
+                              onPressed: () => _editInvestimento(investimento),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.delete),
+                              onPressed: () => _deleteInvestimento(investimento.id),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.delete), // Ícone de excluir
-                      onPressed: () => _deleteInvestimento(investimento.id), // Chama o método de exclusão
-                    ),
-                  ],
-                ),
-              );
-            },
-          );
+                  ),
+                );
+              },
+            );
+          } else {
+            return const Center(child: Text('Nenhum dado encontrado.'));
+          }
         },
       ),
       floatingActionButton: FloatingActionButton(
@@ -171,25 +187,38 @@ class _InvestimentoFormScreenState extends State<InvestimentoFormScreen> {
 
   // Método para salvar o investimento
   void _saveInvestimento() {
-    if (_formKey.currentState!.validate()) { // Valida o formulário
-      final nome = _nomeController.text;
-      final descricao = _descricaoController.text;
-      final tipoMoeda = _tipoMoedaController.text;
-      final valorMoeda = double.parse(_valorMoedaController.text); // Converte o valor da moeda para double
-      final precoAtual = double.parse(_precoAtualController.text); // Converte o preço atual para double
-      final id = widget.investimento?.id ?? DateTime.now().toString(); // Usa o ID existente ou gera um novo
-      final investimento = Investimento(
-        id: id,
-        nome: nome,
-        descricao: descricao,
-        tipoMoeda: tipoMoeda,
-        valorMoeda: valorMoeda,
-        precoAtual: precoAtual,
-      );
+    if (_formKey.currentState!.validate()) {
+      try {
+        final nome = _nomeController.text;
+        final descricao = _descricaoController.text;
+        final tipoMoeda = _tipoMoedaController.text;
+        final valorMoeda = double.tryParse(_valorMoedaController.text) ?? 0.0;
+        final precoAtual = double.tryParse(_precoAtualController.text) ?? 0.0;
 
-      // Adiciona ou atualiza o investimento no serviço
-      _service.saveInvestimento(investimento);
-      Navigator.pop(context); // Retorna à tela anterior
+        if (valorMoeda <= 0 || precoAtual <= 0) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Valores devem ser positivos')),
+          );
+          return;
+        }
+
+        final id = widget.investimento?.id ?? DateTime.now().toString();
+        final investimento = Investimento(
+          id: id,
+          nome: nome,
+          descricao: descricao,
+          tipoMoeda: tipoMoeda,
+          valorMoeda: valorMoeda,
+          precoAtual: precoAtual,
+        );
+
+        _service.saveInvestimento(investimento);
+        Navigator.pop(context);
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erro ao salvar: $e')),
+        );
+      }
     }
   }
 
@@ -220,20 +249,20 @@ class _InvestimentoFormScreenState extends State<InvestimentoFormScreen> {
               ),
               TextFormField(
                 controller: _valorMoedaController,
-                decoration: const InputDecoration(labelText: 'Valor da Moeda'),
                 keyboardType: TextInputType.number,
+                decoration: const InputDecoration(labelText: 'Valor da Moeda'),
                 validator: (value) => value!.isEmpty ? 'Informe o valor da moeda' : null,
               ),
               TextFormField(
                 controller: _precoAtualController,
-                decoration: const InputDecoration(labelText: 'Preço Atual'),
                 keyboardType: TextInputType.number,
+                decoration: const InputDecoration(labelText: 'Preço Atual'),
                 validator: (value) => value!.isEmpty ? 'Informe o preço atual' : null,
               ),
-              const SizedBox(height: 20), // Espaço entre os campos e o botão
+              const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: _saveInvestimento, // Chama o método para salvar o investimento
-                child: const Text('Salvar'), // Texto do botão
+                onPressed: _saveInvestimento,
+                child: const Text('Salvar Investimento'),
               ),
             ],
           ),
