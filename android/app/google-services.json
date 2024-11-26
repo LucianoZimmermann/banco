@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "695867178364",
+    "project_id": "n2flutter-4e49c",
+    "storage_bucket": "n2flutter-4e49c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:695867178364:android:98ce29a1fbb5d24f4a78f9",
+        "android_client_info": {
+          "package_name": "com.banco.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD_YVdRdEpb6v0NkdzdxQBe8ZuLu1QaHQw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:695867178364:android:95d4ebe852ae9c724a78f9",
+        "android_client_info": {
+          "package_name": "com.example.androidstudio"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD_YVdRdEpb6v0NkdzdxQBe8ZuLu1QaHQw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
